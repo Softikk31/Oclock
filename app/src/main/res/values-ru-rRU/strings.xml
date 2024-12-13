@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="h">ч</string>
+    <string name="m">м</string>
+    <string name="s">с</string>
+
+    <string name="titleTime">Время</string>
+    <string name="titleAlarm">Будильник</string>
+    <string name="titleTimer">Таймер</string>
+    <string name="titleStopwatch">Секундомер</string>
+    <string name="titleRemoveTimer">Изменить таймер</string>
+
+    <string name="removeTimerRemoveTimerButtonTimerName">Название таймера</string>
+    <string name="removeTimerRemoveTimerButtonTimerSticker">Стикер</string>
+
+    <string name="buttonDialogOK">Ok</string>
+    <string name="buttonDialogCancel">Отменить</string>
+
+</resources>
