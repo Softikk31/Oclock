@@ -168,8 +168,8 @@ fun RemoveTimer(navController: NavHostController) {
                     Text(
                         modifier = Modifier
                             .padding(start = 10.dp),
-                        text = stringResource(R.string.titleRemoveTimer),
-                        fontSize = 20.sp,
+                        text = stringResource(R.string.titleRefactorTimer),
+                        fontSize = 18.sp,
                         fontWeight = FontWeight(500)
                     )
 
@@ -213,7 +213,7 @@ fun RemoveTimer(navController: NavHostController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 35.dp)
+                    .padding(top = 21.5.dp)
             ) {
 
                 Row(
@@ -268,7 +268,7 @@ fun RemoveTimer(navController: NavHostController) {
                     Text(
                         modifier = Modifier
                             .padding(start = 25.dp),
-                        text = stringResource(R.string.removeTimerRemoveTimerButtonTimerName),
+                        text = stringResource(R.string.refactorTimerRemoveTimerButtonTimerName),
                         fontSize = 15.sp,
                         fontWeight = FontWeight(475)
                     )
@@ -315,7 +315,7 @@ fun RemoveTimer(navController: NavHostController) {
                     Text(
                         modifier = Modifier
                             .padding(start = 25.dp),
-                        text = stringResource(R.string.removeTimerRemoveTimerButtonTimerSticker),
+                        text = stringResource(R.string.refactorTimerRemoveTimerButtonTimerSticker),
                         fontSize = 15.sp,
                         fontWeight = FontWeight(475)
                     )
@@ -434,7 +434,7 @@ fun DialogNameTimer(textTimer: String, onDialogCompleted: (String?) -> Unit) {
                     .padding(horizontal = 20.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.removeTimerRemoveTimerButtonTimerName),
+                    text = stringResource(R.string.refactorTimerRemoveTimerButtonTimerName),
                     fontWeight = FontWeight(500),
                     fontSize = 18.5.sp
                 )
@@ -472,7 +472,7 @@ fun DialogNameTimer(textTimer: String, onDialogCompleted: (String?) -> Unit) {
                                     interactionSource = remember { MutableInteractionSource() },
                                     placeholder = {
                                         Text(
-                                            text = stringResource(R.string.removeTimerRemoveTimerButtonTimerName)
+                                            text = stringResource(R.string.refactorTimerRemoveTimerButtonTimerName)
                                         )
                                     },
                                     contentPadding = PaddingValues(0.dp)
@@ -584,7 +584,7 @@ fun DialogStickerTimer(
                     .padding(horizontal = 20.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.removeTimerRemoveTimerButtonTimerSticker),
+                    text = stringResource(R.string.refactorTimerRemoveTimerButtonTimerSticker),
                     fontWeight = FontWeight(500),
                     fontSize = 18.5.sp
                 )

@@ -80,7 +80,6 @@ fun MainScreen() {
     OclockProgerTimeThemeScreenBottomBarScreens {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            topBar = { if (showBars.value) TopBar(navController) },
             bottomBar = { if (showBars.value) BottomBar(navController = navController) },
             containerColor = WhiteBottomBarColor
         ) { innerPadding ->
@@ -97,38 +96,6 @@ fun MainScreen() {
     }
 }
 
-
-@Composable
-fun TopBar(navController: NavHostController) {
-    val screens = listOf(
-        BottomBarRoutes.Time,
-        BottomBarRoutes.Alarm,
-        BottomBarRoutes.Timer,
-        BottomBarRoutes.Stopwatch
-    )
-
-    val navStackBackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navStackBackEntry?.destination
-
-    Box(
-        modifier = Modifier
-            .background(WhiteColorScreen)
-            .fillMaxWidth()
-    ) {
-        screens.forEach { screen: BottomBarRoutes ->
-            val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
-
-            Text(
-                modifier = Modifier
-                    .padding(start = 20.dp)
-                    .padding(top = 50.dp),
-                text = if (selected) stringResource(screen.title) else "",
-                fontSize = 18.sp,
-                fontWeight = FontWeight(500)
-            )
-        }
-    }
-}
 
 @Composable
 fun BottomBar(navController: NavHostController) {
@@ -218,7 +185,7 @@ fun AddItem(
 
             Text(
                 modifier = Modifier
-                    .padding(top = 30.dp),
+                    .padding(top = 27.5.dp),
                 text = stringResource(screen.title),
                 fontSize = 9.sp,
                 overflow = TextOverflow.Ellipsis,

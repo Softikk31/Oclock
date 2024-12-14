@@ -9,10 +9,10 @@
     <string name="titleAlarm">Будильник</string>
     <string name="titleTimer">Таймер</string>
     <string name="titleStopwatch">Секундомер</string>
-    <string name="titleRemoveTimer">Изменить таймер</string>
+    <string name="titleRefactorTimer">Изменить таймер</string>
 
-    <string name="removeTimerRemoveTimerButtonTimerName">Название таймера</string>
-    <string name="removeTimerRemoveTimerButtonTimerSticker">Стикер</string>
+    <string name="refactorTimerRemoveTimerButtonTimerName">Название таймера</string>
+    <string name="refactorTimerRemoveTimerButtonTimerSticker">Стикер</string>
 
     <string name="buttonDialogOK">Ok</string>
     <string name="buttonDialogCancel">Отменить</string>

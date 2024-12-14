@@ -118,6 +118,14 @@ fun TimerScreenFun(
                 .background(WhiteColorScreen)
         ) {
 
+            Text(
+                modifier = Modifier
+                    .padding(top = 10.dp, start = 20.dp),
+                text = stringResource(R.string.titleTimer),
+                fontSize = 18.sp,
+                fontWeight = FontWeight(500)
+            )
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
