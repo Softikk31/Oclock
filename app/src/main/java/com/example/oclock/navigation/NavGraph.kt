@@ -4,12 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.oclock.navigation.bottom.BottomBarRoutes
+import com.example.oclock.navigation.ui.BottomBarRoutes
 import com.example.oclock.screens.AlarmScreenFun
-import com.example.oclock.screens.RemoveTimer
+import com.example.oclock.screens.Timer.RemoveTimer
 import com.example.oclock.screens.StopwatchScreenFun
 import com.example.oclock.screens.TimeScreenFun
-import com.example.oclock.screens.TimerScreenFun
+import com.example.oclock.screens.Timer.TimerScreenFun
 
 @Composable
 fun NavGraphFun(navController: NavHostController) {

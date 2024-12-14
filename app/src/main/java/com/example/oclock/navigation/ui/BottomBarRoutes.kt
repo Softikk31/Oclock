@@ -1,4 +1,4 @@
-package com.example.oclock.navigation.bottom
+package com.example.oclock.navigation.ui
 
 import com.example.oclock.R
 
@@ -8,25 +8,25 @@ sealed class BottomBarRoutes(
     val icon: Int
 ) {
 
-    object Time : BottomBarRoutes(
+    data object Time : BottomBarRoutes(
         route = "time",
         title = R.string.titleTime,
         icon = R.drawable.time_icon
     )
 
-    object Alarm : BottomBarRoutes(
+    data object Alarm : BottomBarRoutes(
         route = "alarm",
         title = R.string.titleAlarm,
         icon = R.drawable.alarm_icon
     )
 
-    object Timer : BottomBarRoutes(
+    data object Timer : BottomBarRoutes(
         route = "timer",
         title = R.string.titleTimer,
         icon = R.drawable.timer_icon
     )
 
-    object Stopwatch : BottomBarRoutes(
+    data object Stopwatch : BottomBarRoutes(
         route = "stopwatch",
         title = R.string.titleStopwatch,
         icon = R.drawable.stopwatch_icon

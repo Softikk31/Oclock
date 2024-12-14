@@ -1,5 +1,29 @@
 package com.example.oclock.data
 
+
+//@Entity(tableName = "users")
+//class User {
+//    @PrimaryKey(autoGenerate = true)
+//    @NonNull
+//    @ColumnInfo(name = "userId")
+//    var id: Int = 0
+//    @ColumnInfo(name = "userName")
+//    var name: String? = null
+//    var age: Int? = null
+//
+//    constructor() {}
+//
+//    constructor(id: Int, name: String, age: Int) {
+//        this.id = id
+//        this.name = name
+//        this.age = age
+//    }
+//    constructor(name: String, age: Int) {
+//        this.name = name
+//        this.age = age
+//    }
+//}
+
 val innerList = mutableListOf<TimerItems>()
 private var lastId = 0
 

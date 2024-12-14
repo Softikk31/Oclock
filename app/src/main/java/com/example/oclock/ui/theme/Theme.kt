@@ -20,6 +20,7 @@ fun OclockProgerTimeThemeScreenBottomBarScreens(
         SideEffect {
             val window = (view.context as Activity).window
             window.navigationBarColor = WhiteBottomBarColor.toArgb()
+            window.statusBarColor = WhiteColorScreen.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }

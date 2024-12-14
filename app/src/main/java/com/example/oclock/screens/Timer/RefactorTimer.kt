@@ -1,7 +1,7 @@
 @file:Suppress("DEPRECATION", "SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.oclock.screens
+package com.example.oclock.screens.Timer
 
 import android.view.Gravity
 import androidx.compose.foundation.background
@@ -76,7 +76,7 @@ import com.example.oclock.data.DataStickers
 import com.example.oclock.data.addItem
 import com.example.oclock.data.funcs.chunkedWithNulls
 import com.example.oclock.data.getStickersTimer
-import com.example.oclock.navigation.bottom.BottomBarRoutes
+import com.example.oclock.navigation.ui.BottomBarRoutes
 import com.example.oclock.picker.Picker
 import com.example.oclock.picker.rememberPickerState
 import com.example.oclock.ui.theme.DarkGray
@@ -111,7 +111,8 @@ fun RemoveTimer(navController: NavHostController) {
     val timeIndexM by remember { mutableIntStateOf(0) }
     val timeIndexS by remember { mutableIntStateOf(0) }
 
-    val listStartIndexHour = LIST_SCROLL_MIDDLE - LIST_SCROLL_MIDDLE % hour.size - VISIBLE_ITEMS_MIDDLE + timeIndexH
+    val listStartIndexHour =
+        LIST_SCROLL_MIDDLE - LIST_SCROLL_MIDDLE % hour.size - VISIBLE_ITEMS_MIDDLE + timeIndexH
 
     val listStartIndexMinute =
         LIST_SCROLL_MIDDLE - LIST_SCROLL_MIDDLE % minute.size - VISIBLE_ITEMS_MIDDLE + timeIndexM
@@ -148,8 +149,7 @@ fun RemoveTimer(navController: NavHostController) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 10.dp)
-                        .padding(top = 50.dp),
+                        .padding(horizontal = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
@@ -393,9 +393,18 @@ fun DialogNameTimer(textTimer: String, onDialogCompleted: (String?) -> Unit) {
 
     var messageFlag by remember { mutableStateOf(textTimer) }
 
-    val selectionColors = TextSelectionColors(
-        handleColor = Green,
-        backgroundColor = LightGreen
+    val selectionColors = colors(
+        focusedContainerColor = Color.Transparent,
+        unfocusedContainerColor = Color.Transparent,
+        focusedIndicatorColor = Color.Transparent,
+        unfocusedIndicatorColor = Color.Transparent,
+        focusedPlaceholderColor = LightGray,
+        unfocusedPlaceholderColor = LightGray,
+        selectionColors = TextSelectionColors(
+            handleColor = Green,
+            backgroundColor = LightGreen
+        )
+
     )
 
     var buttonActive by remember { mutableStateOf(true) }
@@ -435,7 +444,7 @@ fun DialogNameTimer(textTimer: String, onDialogCompleted: (String?) -> Unit) {
                         .padding(top = 15.dp)
                 ) {
 
-                    CompositionLocalProvider(LocalTextSelectionColors provides selectionColors) {
+                    CompositionLocalProvider(LocalTextSelectionColors provides selectionColors.textSelectionColors) {
                         BasicTextField(
                             modifier = Modifier
                                 .weight(1f),
@@ -458,12 +467,7 @@ fun DialogNameTimer(textTimer: String, onDialogCompleted: (String?) -> Unit) {
                                     innerTextField = innerTextField,
                                     enabled = true,
                                     singleLine = true,
-                                    colors = colors(
-                                        focusedContainerColor = Color.Transparent,
-                                        unfocusedContainerColor = Color.Transparent,
-                                        focusedIndicatorColor = Color.Transparent,
-                                        unfocusedIndicatorColor = Color.Transparent
-                                    ),
+                                    colors = selectionColors,
                                     visualTransformation = VisualTransformation.None,
                                     interactionSource = remember { MutableInteractionSource() },
                                     placeholder = {

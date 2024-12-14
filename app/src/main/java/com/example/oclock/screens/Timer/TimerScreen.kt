@@ -1,4 +1,4 @@
-package com.example.oclock.screens
+package com.example.oclock.screens.Timer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -117,13 +117,6 @@ fun TimerScreenFun(
                 .fillMaxSize()
                 .background(WhiteColorScreen)
         ) {
-
-            Text(
-                text = stringResource(R.string.titleTimer),
-                modifier = Modifier.padding(top = 50.dp, start = 25.dp),
-                fontSize = 20.sp,
-                fontWeight = FontWeight(500)
-            )
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
