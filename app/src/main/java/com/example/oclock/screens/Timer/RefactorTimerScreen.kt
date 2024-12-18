@@ -1,5 +1,6 @@
-@file:Suppress("DEPRECATION", "SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:Suppress("DEPRECATION", "SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN") @file:OptIn(
+    ExperimentalMaterial3Api::class
+)
 
 package com.example.oclock.screens.Timer
 
@@ -101,7 +102,7 @@ private val namesStickersList = extractTexts()
 
 //@Preview(showSystemUi = true)
 @Composable
-fun RemoveTimer(navController: NavHostController) {
+fun RemoveTimerScreenFun(navController: NavHostController) {
 
     val hourPickerState = rememberPickerState()
     val minutePickerState = rememberPickerState()
@@ -120,12 +121,9 @@ fun RemoveTimer(navController: NavHostController) {
     val listStartIndexSeconds =
         LIST_SCROLL_MIDDLE - LIST_SCROLL_MIDDLE % seconds.size - VISIBLE_ITEMS_MIDDLE + timeIndexS
 
-    val listStateH =
-        rememberLazyListState(initialFirstVisibleItemIndex = listStartIndexHour)
-    val listStateM =
-        rememberLazyListState(initialFirstVisibleItemIndex = listStartIndexMinute)
-    val listStateS =
-        rememberLazyListState(initialFirstVisibleItemIndex = listStartIndexSeconds)
+    val listStateH = rememberLazyListState(initialFirstVisibleItemIndex = listStartIndexHour)
+    val listStateM = rememberLazyListState(initialFirstVisibleItemIndex = listStartIndexMinute)
+    val listStateS = rememberLazyListState(initialFirstVisibleItemIndex = listStartIndexSeconds)
 
     var textTimer by remember { mutableStateOf("Таймер") }
     var textSticker by remember { mutableStateOf("Таймер") }
@@ -143,8 +141,7 @@ fun RemoveTimer(navController: NavHostController) {
         ) {
 
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Row(
                     modifier = Modifier
@@ -152,55 +149,44 @@ fun RemoveTimer(navController: NavHostController) {
                         .padding(horizontal = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
-                        onClick = {
-                            navController.navigate(BottomBarRoutes.Timer.route)
-                        }
-                    ) {
+                    IconButton(onClick = {
+                        navController.navigate(BottomBarRoutes.Timer.route)
+                    }) {
                         Icon(
-                            modifier = Modifier
-                                .size(25.dp),
+                            modifier = Modifier.size(25.dp),
                             imageVector = Icons.Default.Close,
                             contentDescription = null
                         )
                     }
 
                     Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp),
+                        modifier = Modifier.padding(start = 10.dp),
                         text = stringResource(R.string.titleRefactorTimer),
                         fontSize = 18.sp,
                         fontWeight = FontWeight(500)
                     )
 
                     Box(
-                        modifier = Modifier
-                            .weight(1f)
+                        modifier = Modifier.weight(1f)
                     ) {
-                        IconButton(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd),
-                            onClick = {
-                                addItem(
-                                    text = textTimer,
-                                    h = hourPickerState.selectedItem,
-                                    m = minutePickerState.selectedItem,
-                                    s = secondsPickerState.selectedItem,
-                                    icon = if ((listStickers.firstOrNull { it.text == textSticker }?.icon
-                                            ?: -1) == -1
-                                    ) {
-                                        R.drawable.timer_icon
-                                    } else {
-                                        listStickers.firstOrNull { it.text == textSticker }?.icon
-                                            ?: -1
-                                    }
-                                )
-                                navController.navigate(BottomBarRoutes.Timer.route)
-                            }
-                        ) {
+                        IconButton(modifier = Modifier.align(Alignment.CenterEnd), onClick = {
+                            addItem(
+                                text = textTimer,
+                                h = hourPickerState.selectedItem,
+                                m = minutePickerState.selectedItem,
+                                s = secondsPickerState.selectedItem,
+                                icon = if ((listStickers.firstOrNull { it.text == textSticker }?.icon
+                                        ?: -1) == -1
+                                ) {
+                                    R.drawable.timer_icon
+                                } else {
+                                    listStickers.firstOrNull { it.text == textSticker }?.icon ?: -1
+                                }
+                            )
+                            navController.navigate(BottomBarRoutes.Timer.route)
+                        }) {
                             Icon(
-                                modifier = Modifier
-                                    .size(25.dp),
+                                modifier = Modifier.size(25.dp),
                                 imageVector = Icons.Default.Check,
                                 contentDescription = null
                             )
@@ -251,23 +237,17 @@ fun RemoveTimer(navController: NavHostController) {
                     )
                 }
 
-                Row(
-                    modifier = Modifier
-                        .padding(top = 35.dp)
-                        .fillMaxWidth()
-                        .height(70.dp)
-                        .clickable(
-                            onClick = {
-                                openDialogName = true
-                            }
-                        ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(modifier = Modifier
+                    .padding(top = 35.dp)
+                    .fillMaxWidth()
+                    .height(70.dp)
+                    .clickable(onClick = {
+                        openDialogName = true
+                    }), verticalAlignment = Alignment.CenterVertically) {
 
 
                     Text(
-                        modifier = Modifier
-                            .padding(start = 25.dp),
+                        modifier = Modifier.padding(start = 25.dp),
                         text = stringResource(R.string.refactorTimerRemoveTimerButtonTimerName),
                         fontSize = 15.sp,
                         fontWeight = FontWeight(475)
@@ -277,12 +257,10 @@ fun RemoveTimer(navController: NavHostController) {
                     Box(
                         Modifier
                             .weight(1f)
-                            .width(150.dp),
-                        contentAlignment = Alignment.CenterEnd
+                            .width(150.dp), contentAlignment = Alignment.CenterEnd
                     ) {
                         Text(
-                            modifier = Modifier
-                                .padding(end = 5.dp),
+                            modifier = Modifier.padding(end = 5.dp),
                             text = textTimer,
                             fontSize = 12.5.sp,
                             color = DarkGray,
@@ -291,8 +269,7 @@ fun RemoveTimer(navController: NavHostController) {
                     }
 
                     Icon(
-                        modifier = Modifier
-                            .padding(end = 20.dp),
+                        modifier = Modifier.padding(end = 20.dp),
                         imageVector = Icons.Default.KeyboardArrowRight,
                         contentDescription = null,
                         tint = DarkGray
@@ -300,21 +277,15 @@ fun RemoveTimer(navController: NavHostController) {
 
                 }
 
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(70.dp)
-                        .clickable(
-                            onClick = {
-                                openDialogSticker = true
-                            }
-                        ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(70.dp)
+                    .clickable(onClick = {
+                        openDialogSticker = true
+                    }), verticalAlignment = Alignment.CenterVertically) {
 
                     Text(
-                        modifier = Modifier
-                            .padding(start = 25.dp),
+                        modifier = Modifier.padding(start = 25.dp),
                         text = stringResource(R.string.refactorTimerRemoveTimerButtonTimerSticker),
                         fontSize = 15.sp,
                         fontWeight = FontWeight(475)
@@ -323,12 +294,10 @@ fun RemoveTimer(navController: NavHostController) {
                     Box(
                         Modifier
                             .weight(1f)
-                            .width(150.dp),
-                        contentAlignment = Alignment.CenterEnd
+                            .width(150.dp), contentAlignment = Alignment.CenterEnd
                     ) {
                         Text(
-                            modifier = Modifier
-                                .padding(end = 5.dp),
+                            modifier = Modifier.padding(end = 5.dp),
                             text = textSticker,
                             fontSize = 12.5.sp,
                             color = DarkGray,
@@ -337,8 +306,7 @@ fun RemoveTimer(navController: NavHostController) {
                     }
 
                     Icon(
-                        modifier = Modifier
-                            .padding(end = 20.dp),
+                        modifier = Modifier.padding(end = 20.dp),
                         imageVector = Icons.Default.KeyboardArrowRight,
                         contentDescription = null,
                         tint = DarkGray
@@ -401,8 +369,7 @@ fun DialogNameTimer(textTimer: String, onDialogCompleted: (String?) -> Unit) {
         focusedPlaceholderColor = LightGray,
         unfocusedPlaceholderColor = LightGray,
         selectionColors = TextSelectionColors(
-            handleColor = Green,
-            backgroundColor = LightGreen
+            handleColor = Green, backgroundColor = LightGreen
         )
 
     )
@@ -440,14 +407,11 @@ fun DialogNameTimer(textTimer: String, onDialogCompleted: (String?) -> Unit) {
                 )
 
                 Row(
-                    modifier = Modifier
-                        .padding(top = 15.dp)
+                    modifier = Modifier.padding(top = 15.dp)
                 ) {
 
                     CompositionLocalProvider(LocalTextSelectionColors provides selectionColors.textSelectionColors) {
-                        BasicTextField(
-                            modifier = Modifier
-                                .weight(1f),
+                        BasicTextField(modifier = Modifier.weight(1f),
                             value = messageFlag,
                             onValueChange = {
                                 if (it.length <= 20) {
@@ -477,8 +441,7 @@ fun DialogNameTimer(textTimer: String, onDialogCompleted: (String?) -> Unit) {
                                     },
                                     contentPadding = PaddingValues(0.dp)
                                 )
-                            }
-                        )
+                            })
                     }
 
                     IconButton(
@@ -486,19 +449,15 @@ fun DialogNameTimer(textTimer: String, onDialogCompleted: (String?) -> Unit) {
                             .padding(end = 5.dp)
                             .size(15.dp)
                             .clip(shape = CircleShape)
-                            .align(alignment = Alignment.CenterVertically),
-                        onClick = {
+                            .align(alignment = Alignment.CenterVertically), onClick = {
                             messageFlag = ""
                             buttonActive = false
-                        },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = Color.LightGray,
-                            contentColor = Color.White
+                        }, colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = Color.LightGray, contentColor = Color.White
                         )
                     ) {
                         Icon(
-                            modifier = Modifier
-                                .padding(2.dp),
+                            modifier = Modifier.padding(2.dp),
                             imageVector = Icons.Default.Clear,
                             contentDescription = null
                         )
@@ -508,18 +467,14 @@ fun DialogNameTimer(textTimer: String, onDialogCompleted: (String?) -> Unit) {
 
 
                 HorizontalDivider(
-                    modifier = Modifier
-                        .padding(top = 10.dp),
-                    thickness = 1.25.dp,
-                    color = LightGray
+                    modifier = Modifier.padding(top = 10.dp), thickness = 1.25.dp, color = LightGray
                 )
 
                 Row(
                     Modifier.padding(top = 15.dp)
                 ) {
                     Button(
-                        modifier = Modifier
-                            .weight(1f),
+                        modifier = Modifier.weight(1f),
                         onClick = { onDialogCompleted(null) },
                         colors = ButtonDefaults.buttonColors(containerColor = WhiteColorScreen)
                     ) {
@@ -531,8 +486,7 @@ fun DialogNameTimer(textTimer: String, onDialogCompleted: (String?) -> Unit) {
                     }
 
                     Button(
-                        modifier = Modifier
-                            .weight(1f),
+                        modifier = Modifier.weight(1f),
                         onClick = { onDialogCompleted(messageFlag) },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = WhiteColorScreen,
@@ -554,9 +508,7 @@ fun DialogNameTimer(textTimer: String, onDialogCompleted: (String?) -> Unit) {
 
 @Composable
 fun DialogStickerTimer(
-    stateActive: Int,
-    textTimer: String,
-    onDialogCompleted: (String?, String?, Int?) -> Unit
+    stateActive: Int, textTimer: String, onDialogCompleted: (String?, String?, Int?) -> Unit
 ) {
 
     Dialog(
@@ -597,49 +549,39 @@ fun DialogStickerTimer(
                     items(listStickers.chunkedWithNulls(4)) { item ->
                         Row(
                             modifier = Modifier
-                                .fillMaxSize(),
+                                .fillMaxSize()
+                                .padding(horizontal = 10.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             item.forEach {
                                 when (it) {
                                     is DataStickers -> {
-                                        Box(
-                                            modifier = Modifier
-                                                .width(60.dp)
-                                                .padding(top = 15.dp)
-                                                .padding(horizontal = 5.dp)
-                                                .clickable(
-                                                    onClick = {
-                                                        if (textTimer in namesStickersList) {
-                                                            onDialogCompleted(
-                                                                it.text,
-                                                                it.text,
-                                                                it.id
-                                                            )
-                                                        } else {
-                                                            onDialogCompleted(
-                                                                it.text,
-                                                                null,
-                                                                it.id
-                                                            )
-                                                        }
-                                                    }
-                                                )
-                                        ) {
+                                        Box(modifier = Modifier
+                                            .width(50.dp)
+                                            .padding(top = 10.dp)
+                                            .clickable(onClick = {
+                                                if (textTimer in namesStickersList) {
+                                                    onDialogCompleted(
+                                                        it.text, it.text, it.id
+                                                    )
+                                                } else {
+                                                    onDialogCompleted(
+                                                        it.text, null, it.id
+                                                    )
+                                                }
+                                            })) {
                                             Column(
                                                 horizontalAlignment = Alignment.CenterHorizontally
                                             ) {
                                                 Icon(
-                                                    modifier = Modifier
-                                                        .size(20.dp),
+                                                    modifier = Modifier.size(20.dp),
                                                     imageVector = ImageVector.vectorResource(it.icon),
                                                     contentDescription = null,
                                                     tint = if (it.id == stateActive) Green else LightGray
                                                 )
 
                                                 Box(
-                                                    modifier = Modifier
-                                                        .width(50.dp),
+                                                    modifier = Modifier.width(50.dp),
                                                     contentAlignment = Alignment.Center
                                                 ) {
                                                     Text(
@@ -655,11 +597,11 @@ fun DialogStickerTimer(
                                     }
 
                                     null -> {
+
                                         Box(
                                             modifier = Modifier
-                                                .width(60.dp)
-                                                .padding(top = 15.dp)
-                                                .padding(horizontal = 5.dp)
+                                                .width(50.dp)
+                                                .padding(top = 10.dp)
                                         )
                                     }
                                 }

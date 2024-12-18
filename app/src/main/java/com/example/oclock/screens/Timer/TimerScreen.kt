@@ -269,7 +269,7 @@ fun TimerScreenFun(
                                 contentDescription = null,
                                 modifier = Modifier
                                     .size(20.dp),
-                                tint = DarkGray
+                                tint = LightGray
                             )
                         }
 

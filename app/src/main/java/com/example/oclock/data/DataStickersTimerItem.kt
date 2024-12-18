@@ -9,7 +9,7 @@ data class DataStickers(
 )
 
 fun getStickersTimer(): List<DataStickers> {
-    return listOf<DataStickers>(
+    return listOf(
         DataStickers(1, R.drawable.timer_icon, "Таймер"),
         DataStickers(2, R.drawable.edit_message_icon, "Совещание"),
         DataStickers(3, R.drawable.moon_stars_icon, "Спящий режим"),
