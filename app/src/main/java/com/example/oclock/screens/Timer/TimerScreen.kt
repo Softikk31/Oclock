@@ -1,29 +1,24 @@
 package com.example.oclock.screens.Timer
 
+import android.content.Context
+import android.service.autofill.Validators.and
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.AbsoluteCutCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,24 +32,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.oclock.R
+import com.example.oclock.data.TimerDatabase
 import com.example.oclock.data.TimerItems
+import com.example.oclock.data.deleteItem
 import com.example.oclock.data.funcs.chunkedWithNulls
 import com.example.oclock.data.getTimeTimer
 import com.example.oclock.navigation.Routes
 import com.example.oclock.picker.Picker
 import com.example.oclock.picker.rememberPickerState
 import com.example.oclock.ui.theme.*
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 private val seconds = (0..59).map { if (it < 10) "0$it" else it.toString() }
 private val minute = (0..59).map { if (it < 10) "0$it" else it.toString() }
@@ -69,7 +66,16 @@ private const val LIST_SCROLL_MIDDLE = LIST_SCROLL_COUNT / 2
 fun TimerScreenFun(
     navController: NavHostController
 ) {
-    val listTimer = getTimeTimer()
+
+    val listTimer = remember { mutableStateListOf<TimerItems>() }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        val timerDao = TimerDatabase.getInstance(context).timerDao()
+        listTimer.clear()
+        listTimer.addAll(getTimeTimer(timerDao = timerDao))
+    }
 
     val hourPickerState = rememberPickerState()
     val minutePickerState = rememberPickerState()
@@ -97,8 +103,10 @@ fun TimerScreenFun(
     val listStateS =
         rememberLazyListState(initialFirstVisibleItemIndex = listStartIndexSeconds)
 
-    var stateActive by remember { mutableIntStateOf(0) }
+    var stateActive by remember { mutableStateOf(0) }
+    var stateActiveToolWidget by remember { mutableStateOf(0) }
     var jobEnabled by remember { mutableStateOf(true) }
+
 
     LaunchedEffect(
         hourPickerState.selectedItem,
@@ -116,6 +124,13 @@ fun TimerScreenFun(
             modifier = Modifier
                 .fillMaxSize()
                 .background(WhiteColorScreen)
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onPress = {
+                            stateActiveToolWidget = 0
+                        }
+                    )
+                }
         ) {
 
             Text(
@@ -204,9 +219,21 @@ fun TimerScreenFun(
                                             }
 
                                             ButtonTimerItemPreview(
-                                                it = it,
+                                                context = context,
+                                                list = {
+                                                    CoroutineScope(Dispatchers.Main).launch {
+
+                                                        val timerDao = TimerDatabase.getInstance(context).timerDao()
+                                                        listTimer.clear()
+                                                        listTimer.addAll(getTimeTimer(timerDao = timerDao))
+                                                    }
+                                                },
+                                                obj = it,
                                                 stateActive = { id ->
                                                     stateActive = id
+                                                },
+                                                stateActiveToolWidget = { id ->
+                                                    stateActiveToolWidget = id
                                                 },
                                                 jobEnabled = {
                                                     jobEnabled = false
@@ -216,14 +243,18 @@ fun TimerScreenFun(
                                                     timeIndexM = m
                                                     timeIndexS = s
                                                 },
-                                                stateActiveItem = stateActive
+                                                stateActiveItem = stateActive,
+                                                stateActiveToolWidgetItem = stateActiveToolWidget
                                             )
                                         }
 
                                         is TimerItems.AddItemsItem -> {
 
                                             ButtonTimerItemPreviewAddItemButton(
-                                                navController = navController
+                                                navController = navController,
+                                                stateActiveToolWidget = { id ->
+                                                    stateActiveToolWidget = id
+                                                }
                                             )
 
                                         }
@@ -333,7 +364,174 @@ fun TimerScreenFun(
                                 tint = DarkGray
                             )
                         }
+                    }
+                }
+            }
+        }
+    }
+}
 
+
+@Composable
+fun ButtonTimerItemPreview(
+    context: Context,
+    list: () -> Unit,
+    stateActive: (Int) -> Unit,
+    stateActiveToolWidget: (Int) -> Unit,
+    jobEnabled: () -> Unit,
+    timeRefactor: (Int, Int, Int) -> Unit,
+    stateActiveItem: Int,
+    stateActiveToolWidgetItem: Int,
+    obj: TimerItems.DataTimerItem
+) {
+
+    Box(
+        modifier = Modifier
+            .padding(10.dp)
+            .height(100.dp)
+            .width(100.dp)
+            .clip(shape = RoundedCornerShape(16.dp))
+            .background(
+                Color.Transparent
+            )
+            .height(intrinsicSize = IntrinsicSize.Min)
+            .width(intrinsicSize = IntrinsicSize.Min),
+        contentAlignment = Alignment.Center
+    ) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    if (stateActiveItem == obj.id) {
+                        LightGreen
+                    } else {
+                        WhitePickerItemColor
+                    }
+                )
+                .pointerInput(stateActiveItem) {
+                    detectTapGestures(
+
+                        onTap = {
+                            jobEnabled()
+                            if (stateActiveItem == obj.id) {
+                                stateActive(0)
+                            } else {
+                                stateActive(obj.id)
+                            }
+                            timeRefactor(obj.h.toInt(), obj.m.toInt(), obj.s.toInt())
+                            stateActiveToolWidget(0)
+                        },
+
+                        onLongPress = {
+                            stateActiveToolWidget(obj.id)
+                        }
+                    )
+                },
+
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Icon(
+                modifier = Modifier
+                    .padding(top = 15.dp, bottom = 7.5.dp)
+                    .size(20.dp),
+                imageVector = ImageVector.vectorResource(obj.icon),
+                contentDescription = null,
+                tint = if (stateActiveItem == obj.id) Green else DarkGray
+            )
+            Box(
+                modifier = Modifier
+                    .width(80.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = obj.text,
+                    fontSize = 13.sp,
+                    color = if (stateActiveItem == obj.id) Green else Color.Black,
+                    fontWeight = FontWeight(400),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Text(
+                text = "${obj.h}:${obj.m}:${obj.s}",
+                fontSize = 12.sp,
+                color = if (stateActiveItem == obj.id) Green else DarkGray
+            )
+        }
+
+
+        if (stateActiveToolWidgetItem == obj.id) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Transparent)
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onPress = {
+                                jobEnabled()
+                                stateActive(obj.id)
+                                timeRefactor(obj.h.toInt(), obj.m.toInt(), obj.s.toInt())
+                                stateActiveToolWidget(0)
+                            }
+                        )
+                    },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+
+                IconButton(
+                    modifier = Modifier
+                        .clip(CircleShape),
+                    onClick = { }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(DarkGray.copy(alpha = 0.75f), shape = CircleShape)
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .align(Alignment.Center),
+                            imageVector = Icons.Default.Edit,
+                            tint = Color.White,
+                            contentDescription = null
+                        )
+                    }
+                }
+
+                IconButton(
+                    modifier = Modifier
+                        .clip(CircleShape),
+                    onClick = {
+                        CoroutineScope(Dispatchers.Main).launch {
+
+                            val timerDao = TimerDatabase.getInstance(context).timerDao()
+                            deleteItem(timerDao = timerDao, obj.id)
+                            stateActiveToolWidget(0)
+                            if (obj.id == stateActiveItem) {
+                                stateActive(0)
+                            }
+                            list()
+
+                        }
+                    }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .background(DarkGray.copy(alpha = 0.75f), shape = CircleShape)
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .align(Alignment.Center),
+                            imageVector = Icons.Default.Delete,
+                            tint = Color.White,
+                            contentDescription = null
+                        )
                     }
                 }
             }
@@ -342,78 +540,9 @@ fun TimerScreenFun(
 }
 
 @Composable
-fun ButtonTimerItemPreview(
-    stateActive: (Int) -> Unit,
-    jobEnabled: () -> Unit,
-    timeRefactor: (Int, Int, Int) -> Unit,
-    stateActiveItem: Int,
-    it: TimerItems.DataTimerItem
-) {
-
-    Column(
-        modifier = Modifier
-            .padding(10.dp)
-            .height(100.dp)
-            .width(100.dp)
-            .clip(shape = RoundedCornerShape(16.dp))
-            .background(
-                if (stateActiveItem == it.id) {
-                    LightGreen
-                } else {
-                    WhitePickerItemColor
-                }
-            )
-            .clickable(
-
-                onClick = {
-
-                    jobEnabled()
-
-                    if (stateActiveItem == it.id) {
-                        stateActive(0)
-                    } else {
-                        stateActive(it.id)
-                    }
-
-                    timeRefactor(it.h.toInt(), it.m.toInt(), it.s.toInt())
-                }
-
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Icon(
-            modifier = Modifier
-                .padding(top = 15.dp, bottom = 7.5.dp)
-                .size(20.dp),
-            imageVector = ImageVector.vectorResource(it.icon),
-            contentDescription = null,
-            tint = if (stateActiveItem == it.id) Green else DarkGray
-        )
-        Box(
-            modifier = Modifier
-                .width(80.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = it.text,
-                fontSize = 13.sp,
-                color = if (stateActiveItem == it.id) Green else Color.Black,
-                fontWeight = FontWeight(400),
-                maxLines = 1
-            )
-        }
-        Text(
-            text = "${it.h}:${it.m}:${it.s}",
-            fontSize = 12.sp,
-            color = if (stateActiveItem == it.id) Green else DarkGray
-        )
-    }
-}
-
-@Composable
 fun ButtonTimerItemPreviewAddItemButton(
-    navController: NavHostController
+    navController: NavHostController,
+    stateActiveToolWidget: (Int) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -422,11 +551,17 @@ fun ButtonTimerItemPreviewAddItemButton(
             .width(100.dp)
             .clip(shape = RoundedCornerShape(16.dp))
             .background(WhitePickerItemColor)
-            .clickable(
-                onClick = {
-                    navController.navigate(Routes.RemoveTimer.route)
-                }
-            ),
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        stateActiveToolWidget(0)
+                    },
+
+                    onTap = {
+                        navController.navigate(Routes.ReplaceTimer.route)
+                    }
+                )
+            },
         contentAlignment = Alignment.Center
     ) {
         Icon(

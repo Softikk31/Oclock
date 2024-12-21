@@ -1,31 +1,52 @@
 package com.example.oclock.data
+import androidx.room.*
+import android.content.Context
+import java.util.*
+import kotlin.math.abs
 
+@Entity(tableName = "timer_entity")
+data class TimerEntity(
+    @PrimaryKey val id: Int = 0,
+    val text: String,
+    val h: String,
+    val m: String,
+    val s: String,
+    val icon: Int
+)
 
-//@Entity(tableName = "users")
-//class User {
-//    @PrimaryKey(autoGenerate = true)
-//    @NonNull
-//    @ColumnInfo(name = "userId")
-//    var id: Int = 0
-//    @ColumnInfo(name = "userName")
-//    var name: String? = null
-//    var age: Int? = null
-//
-//    constructor() {}
-//
-//    constructor(id: Int, name: String, age: Int) {
-//        this.id = id
-//        this.name = name
-//        this.age = age
-//    }
-//    constructor(name: String, age: Int) {
-//        this.name = name
-//        this.age = age
-//    }
-//}
+@Dao
+interface TimerDao {
+    @Query("SELECT * FROM timer_entity")
+    suspend fun getAllTimers(): List<TimerEntity>
 
-val innerList = mutableListOf<TimerItems>()
-private var lastId = 0
+    @Insert
+    suspend fun insertTimer(timer: TimerEntity)
+
+    @Delete
+    suspend fun deleteTimer(timer: TimerEntity)
+
+    @Update
+    suspend fun updateTimer(timer: TimerEntity)
+}
+
+@Database(entities = [TimerEntity::class], version = 1)
+abstract class TimerDatabase : RoomDatabase() {
+    abstract fun timerDao(): TimerDao
+
+    companion object {
+        @Volatile private var INSTANCE: TimerDatabase? = null
+
+        fun getInstance(context: Context): TimerDatabase {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: Room.databaseBuilder(
+                    context.applicationContext,
+                    TimerDatabase::class.java,
+                    "timer_db"
+                ).build().also { INSTANCE = it }
+            }
+        }
+    }
+}
 
 sealed class TimerItems {
     data class DataTimerItem(
@@ -39,44 +60,33 @@ sealed class TimerItems {
     data object AddItemsItem : TimerItems()
 }
 
-fun getTimeTimer(): MutableList<TimerItems> {
-    return (innerList + TimerItems.AddItemsItem).toMutableList()
+fun generateUniqueId(): Int {
+    return abs(UUID.randomUUID().mostSignificantBits).toInt()
 }
 
-fun addItem(text: String, h: String, m: String, s: String, icon: Int) {
-    lastId++
-    innerList.add(
-        TimerItems.DataTimerItem(
-            id = lastId,
-            text = text,
-            h = h,
-            m = m,
-            s = s,
-            icon = icon
-        )
-    )
+suspend fun getTimeTimer(timerDao: TimerDao): List<TimerItems> {
+    val entities = timerDao.getAllTimers()
+    val timers = entities.map { TimerItems.DataTimerItem(it.id, it.text, it.h, it.m, it.s, it.icon) }
+    return timers + TimerItems.AddItemsItem
 }
 
-fun deleteItem(id: Int) {
-    innerList.removeAll { item ->
-        if (item is TimerItems.DataTimerItem) {
-            item.id == id
-        } else {
-            false
-        }
+suspend fun addItem(timerDao: TimerDao, text: String, h: String, m: String, s: String, icon: Int) {
+    val newTimerId = generateUniqueId()
+    val timer = TimerEntity(id = newTimerId, text = text, h = h, m = m, s = s, icon = icon)
+    timerDao.insertTimer(timer)
+}
+
+suspend fun deleteItem(timerDao: TimerDao, id: Int) {
+    val timer = timerDao.getAllTimers().find { it.id == id }
+    if (timer != null) {
+        timerDao.deleteTimer(timer)
     }
 }
 
-fun refactorItem(id: Int, text: String, h: String, m: String, s: String, icon: Int) {
-    innerList.forEachIndexed { index, item ->
-        if (item is TimerItems.DataTimerItem && item.id == id) {
-            innerList[index] = item.copy(
-                text = text,
-                h = h,
-                m = m,
-                s = s,
-                icon = icon
-            )
-        }
+suspend fun refactorItem(timerDao: TimerDao, id: Int, text: String, h: String, m: String, s: String, icon: Int) {
+    val timer = timerDao.getAllTimers().find { it.id == id }
+    if (timer != null) {
+        val updatedTimer = timer.copy(text = text, h = h, m = m, s = s, icon = icon)
+        timerDao.updateTimer(updatedTimer)
     }
 }

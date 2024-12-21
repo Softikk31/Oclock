@@ -5,6 +5,7 @@
 package com.example.oclock.screens.Timer
 
 import android.view.Gravity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -59,6 +60,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -74,6 +76,7 @@ import androidx.compose.ui.window.DialogWindowProvider
 import androidx.navigation.NavHostController
 import com.example.oclock.R
 import com.example.oclock.data.DataStickers
+import com.example.oclock.data.TimerDatabase
 import com.example.oclock.data.addItem
 import com.example.oclock.data.funcs.chunkedWithNulls
 import com.example.oclock.data.getStickersTimer
@@ -86,6 +89,9 @@ import com.example.oclock.ui.theme.LightGray
 import com.example.oclock.ui.theme.LightGreen
 import com.example.oclock.ui.theme.OclockProgerTimeThemeScreenScreens
 import com.example.oclock.ui.theme.WhiteColorScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 fun extractTexts(): List<String> {
     return getStickersTimer().map { it.text }
@@ -102,7 +108,7 @@ private val namesStickersList = extractTexts()
 
 //@Preview(showSystemUi = true)
 @Composable
-fun RemoveTimerScreenFun(navController: NavHostController) {
+fun ReplaceTimerScreenFun(navController: NavHostController, navigateBack: () -> Unit) {
 
     val hourPickerState = rememberPickerState()
     val minutePickerState = rememberPickerState()
@@ -133,6 +139,8 @@ fun RemoveTimerScreenFun(navController: NavHostController) {
 
     var stateActive by remember { mutableIntStateOf(1) }
 
+    val context = LocalContext.current
+
     OclockProgerTimeThemeScreenScreens {
         Column(
             modifier = Modifier
@@ -150,7 +158,7 @@ fun RemoveTimerScreenFun(navController: NavHostController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = {
-                        navController.navigate(BottomBarRoutes.Timer.route)
+                        navigateBack()
                     }) {
                         Icon(
                             modifier = Modifier.size(25.dp),
@@ -170,20 +178,26 @@ fun RemoveTimerScreenFun(navController: NavHostController) {
                         modifier = Modifier.weight(1f)
                     ) {
                         IconButton(modifier = Modifier.align(Alignment.CenterEnd), onClick = {
-                            addItem(
-                                text = textTimer,
-                                h = hourPickerState.selectedItem,
-                                m = minutePickerState.selectedItem,
-                                s = secondsPickerState.selectedItem,
-                                icon = if ((listStickers.firstOrNull { it.text == textSticker }?.icon
-                                        ?: -1) == -1
-                                ) {
-                                    R.drawable.timer_icon
-                                } else {
-                                    listStickers.firstOrNull { it.text == textSticker }?.icon ?: -1
-                                }
-                            )
-                            navController.navigate(BottomBarRoutes.Timer.route)
+                            CoroutineScope(Dispatchers.Main).launch {
+
+                                val timerDao = TimerDatabase.getInstance(context).timerDao()
+
+                                addItem(
+                                    timerDao = timerDao,
+                                    text = textTimer,
+                                    h = hourPickerState.selectedItem,
+                                    m = minutePickerState.selectedItem,
+                                    s = secondsPickerState.selectedItem,
+                                    icon = if ((listStickers.firstOrNull { it.text == textSticker }?.icon
+                                            ?: -1) == -1
+                                    ) {
+                                        R.drawable.timer_icon
+                                    } else {
+                                        listStickers.firstOrNull { it.text == textSticker }?.icon ?: -1
+                                    }
+                                )
+                                navController.navigate(BottomBarRoutes.Timer.route)
+                            }
                         }) {
                             Icon(
                                 modifier = Modifier.size(25.dp),
@@ -550,7 +564,7 @@ fun DialogStickerTimer(
                         Row(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(horizontal = 10.dp),
+                                .padding(horizontal = 7.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             item.forEach {
